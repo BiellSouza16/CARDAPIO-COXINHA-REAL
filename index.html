@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Coxinha Real</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>Coxinha Real 📲 Pedidos</header>
+  <section id="cliente">
+    <label for="nomeCliente"><strong>Seu nome:</strong></label>
+    <input type="text" id="nomeCliente" placeholder="Digite seu nome aqui" />
+  </section>
+  <section>
+    <h2>Salgados (35g – R$1,00)</h2>
+    <div id="salgados"></div>
+  </section>
+  <section>
+    <h2>Bebidas</h2>
+    <div id="bebidas"></div>
+  </section>
+  <section>
+    <h2>Combos (salgados 20g)</h2>
+    <div class="obs">
+      * Os salgados dos combos possuem 20g. Os salgados avulsos possuem 35g.
+    </div>
+    <div id="combos"></div>
+  </section>
+  <div id="resumo">
+    <strong>Resumo do pedido:</strong>
+    <div id="lista"></div>
+    <div id="total">Total: R$0,00</div>
+  </div>
+  <a id="whatsapp-btn" href="#" target="_blank">✅ Finalizar pedido no WhatsApp</a>
+  <script src="script.js"></script>
+</body>
+</html>

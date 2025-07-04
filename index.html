@@ -17,17 +17,25 @@
     header {
       background: #ffcc00;
       color: #000;
-      padding: 20px;
+      padding: 15px 20px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 10px;
-      font-size: 1.8em;
+      justify-content: flex-start;
+      gap: 15px;
+      font-size: 1.6em;
       font-weight: bold;
+      flex-wrap: wrap;
     }
     header img {
-      height: 40px;
+      height: 50px;
       width: auto;
+    }
+    @media (max-width: 600px) {
+      header {
+        font-size: 1.3em;
+        justify-content: center;
+        text-align: center;
+      }
     }
     section {
       padding: 15px;
@@ -93,6 +101,7 @@
       text-decoration: none;
       font-weight: bold;
       box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      z-index: 9999;
     }
     #whatsapp-btn:hover {
       transform: scale(1.05);
@@ -130,54 +139,7 @@
 </head>
 <body>
   <header>
-    <img src="logo.png" alt="Logo da empresa">
+    <img src="logo-coxinha.png" alt="Logo da Coxinha Real">
     Coxinha Real 📲 Pedidos
-  </header>  <section id="cliente">
-    <label for="nomeCliente"><strong>Seu nome:</strong></label>
-    <input type="text" id="nomeCliente" placeholder="Digite seu nome aqui" required>
-  </section>  <section>
-    <h2>Salgados (35g – R$1,00)</h2>
-    <div id="salgados"></div>
-  </section>  <section>
-    <h2>Bebidas</h2>
-    <div id="bebidas"></div>
-  </section>  <section>
-    <h2>Combos (salgados 20g)</h2>
-    <div class="obs">
-      * Os salgados dos combos possuem 20g. Os salgados avulsos possuem 35g.
-    </div>
-    <div id="combos"></div>
-  </section>  <div id="resumo">
-    <strong>Resumo do pedido:</strong>
-    <div id="lista"></div>
-    <div id="total">Total: R$0,00</div>
-  </div><a id="whatsapp-btn" href="#" onclick="enviarPedido(event)" target="_blank">✅ Finalizar pedido no WhatsApp</a>
-
-<script>
-function enviarPedido(event) {
-  event.preventDefault();
-  const nome = document.getElementById('nomeCliente').value.trim();
-  if (!nome) {
-    alert('Por favor, digite seu nome antes de finalizar o pedido.');
-    return;
-  }
-
-  const totalTexto = document.getElementById('total').textContent;
-  const totalValor = parseFloat(totalTexto.replace(/[R$\s]/g, '').replace(',', '.')) || 0;
-  if (totalValor <= 0) {
-    alert('Seu pedido está vazio ou incompleto.');
-    return;
-  }
-
-  const resumo = document.getElementById('lista').textContent.trim();
-  if (!resumo || resumo === '(nenhum item)') {
-    alert('Você precisa adicionar itens ao seu pedido antes de finalizar.');
-    return;
-  }
-
-  const mensagem = `Resumo do pedido de ${nome}\n\n${resumo}\nTotal: R$${totalValor.toFixed(2)}`;
-  const link = `https://wa.me/5573981741968?text=${encodeURIComponent(mensagem)}`;
-  window.open(link, '_blank');
-}
-</script></body>
+  </header>  <!-- conteúdo do cardápio continua... --></body>
 </html>

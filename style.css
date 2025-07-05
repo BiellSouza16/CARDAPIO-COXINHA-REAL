@@ -236,24 +236,12 @@ button.limpar-combo:hover {
   gap: 12px;
 }
 
-.logo-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background-color: #ffcc00; /* amarelo marca */
-  border-bottom: 2px solid #d00000; /* vermelho marca */
-}
-
 .logo {
-  height: 60px;
-  width: auto;
+  height: 100px;
+  width: 100px;
   object-fit: contain;
-  border-radius: 12px;
-}
-
-.logo-container span {
-  font-size: 24px;
-  font-weight: bold;
-  color: #000;
+  border-radius: 50%;
+  background: rgb(255, 187, 0);
+  box-shadow: 0 0 6px rgba(0,0,0,0.15);
+  padding: 4px;
 }

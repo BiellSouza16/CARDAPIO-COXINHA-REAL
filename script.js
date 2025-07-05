@@ -1,5 +1,3 @@
-// script.js (completo)
-
 const salgadosLista = [
   "Coxinha (Frango)", "Palitinho (Queijo com Presunto)", "Balãozinho (Frango com Requeijão)",
   "Travesseirinho (Carne)", "Kibe de Queijo", "Kibe de Carne",
@@ -16,8 +14,8 @@ const bebidas = [
   { nome: "Água com Gás", preco: 3 },
   { nome: "Guaraná 1L", preco: 7 },
   { nome: "Pepsi 1L", preco: 7 },
-  { nome: "IT Guaraná", preco: 8 },
-  { nome: "IT Cola", preco: 8 },
+  { nome: "IT Guaraná 2L", preco: 8 },
+  { nome: "IT Cola 2L", preco: 8 },
 ];
 
 const combos = [
@@ -34,28 +32,79 @@ const combos = [
     { titulo: "Com 1 refri de 2L", preco: 70, qtd: 100, refri: 1, tamanhos: ["2L", "IT"] }
   ]},
 ];
+function alterarQtd(botao, delta, comboId) {
+  const qtdSpan = botao.parentElement.querySelector('span[data-qtd]');
+  let qtdAtual = parseInt(qtdSpan.dataset.qtd);
 
-// Inicia a interface
-criarBloco('salgados', salgadosLista);
-criarBloco('bebidas', bebidas);
-criarCombos();
+  if (!comboId) {
+    // Produtos avulsos (fora dos combos)
+    qtdAtual += delta;
+    if (qtdAtual < 0) qtdAtual = 0;
+    qtdSpan.dataset.qtd = qtdAtual;
+    qtdSpan.textContent = qtdAtual;
+    atualizar();
+    return;
+  }
 
-// Atualiza o resumo sempre que o nome ou algo for alterado
-atualizar();
-document.getElementById('nomeCliente').addEventListener('input', atualizar);
-document.addEventListener('input', atualizar);
+  // Extrai o nome do combo e o título da opção
+  const isRefri = comboId.includes('-refri');
+const baseId = isRefri ? comboId.replace('-refri', '') : comboId;
+const [comboBase, opcaoTitulo] = baseId.split(' – ');
+  const comboObj = combos.find(c => c.nome === comboBase);
+  const opcaoObj = comboObj?.opcoes.find(o => o.titulo === opcaoTitulo);
+  if (!comboObj || !opcaoObj) {
+    qtdAtual += delta;
+    if (qtdAtual < 0) qtdAtual = 0;
+    qtdSpan.dataset.qtd = qtdAtual;
+    qtdSpan.textContent = qtdAtual;
+    atualizar();
+    return;
+  }
+
+  const multInput = document.querySelector(`input[data-combo-mult="${comboBase} – ${opcaoTitulo}"]`);
+  const multiplicador = multInput ? Math.max(1, parseInt(multInput.value)) : 1;
+
+  // Coleta todos os spans do combo (salgados ou refri)
+  const spansCombo = document.querySelectorAll(`span[data-combo='${comboId}']`);
+  let soma = 0;
+  spansCombo.forEach(span => {
+    soma += parseInt(span.dataset.qtd);
+  });
+
+  const limite = isRefri
+    ? (opcaoObj.refri || 0) * multiplicador
+    : (opcaoObj.qtd || 0) * multiplicador;
+
+  if (delta > 0 && soma >= limite) {
+    const box = document.querySelector(`[data-combo-box='${comboBase} – ${opcaoTitulo}']`);
+    if (box) {
+      box.classList.add('erro-combo');
+      setTimeout(() => box.classList.remove('erro-combo'), 800);
+    }
+    return;
+  }
+
+  qtdAtual += delta;
+  if (qtdAtual < 0) qtdAtual = 0;
+  qtdSpan.dataset.qtd = qtdAtual;
+  qtdSpan.textContent = qtdAtual;
+  atualizar();
+}
 
 function criarBloco(id, itens, precoFixo = 1) {
   const container = document.getElementById(id);
   itens.forEach(item => {
+    const preco = item.preco || precoFixo;
+    const nome = item.nome || item;
+    const texto = (id === 'bebidas') ? `${nome} (R$${preco.toFixed(2)})` : nome;
     const box = document.createElement('div');
     box.className = 'card-box';
     box.innerHTML = `
       <div class="item">
-        <span>${item.nome || item}</span>
+        <span>${texto}</span>
         <div class="quantidade">
           <button onclick="alterarQtd(this, -1)">-</button>
-          <span data-nome="${item.nome || item}" data-preco="${item.preco || precoFixo}" data-qtd="0">0</span>
+          <span data-nome="${nome}" data-preco="${preco}" data-qtd="0">0</span>
           <button onclick="alterarQtd(this, 1)">+</button>
         </div>
       </div>`;
@@ -67,16 +116,29 @@ function criarCombos() {
   const container = document.getElementById('combos');
   combos.forEach(combo => {
     combo.opcoes.forEach(opcao => {
+      const idCombo = `${combo.nome} – ${opcao.titulo}`;
       const box = document.createElement('div');
       box.className = 'card-box';
-      const idCombo = `${combo.nome} – ${opcao.titulo}`;
+      box.setAttribute('data-combo-box', idCombo);
+
+      // Primeiro monta o conteúdo base no innerHTML
       box.innerHTML = `
         <div class="combo-title">${combo.nome} – ${opcao.titulo}</div>
         <div class="combo-sub">${opcao.qtd} mini salgados – R$${opcao.preco.toFixed(2)}</div>
         <label>Quantidade de combos:
           <input type="number" min="1" value="1" data-combo-mult="${idCombo}" style="width:50px; margin-left:10px;">
-        </label>`;
+        </label>
+        <div class="combo-actions">
+          <button class="limpar-combo" onclick="limparCombo('${idCombo}')">Limpar Combo</button>
+        </div>
+      `;
 
+      // Depois adiciona a div de mensagem de erro para avisos visuais
+      const mensagemErro = document.createElement('div');
+      mensagemErro.className = 'mensagem-erro';
+      box.appendChild(mensagemErro);
+
+      // Adiciona os sabores dos salgados
       const saboresDiv = document.createElement('div');
       saboresDiv.className = 'sabores';
       saboresDiv.innerHTML = salgadosLista.map(sabor => `
@@ -90,9 +152,11 @@ function criarCombos() {
         </div>`).join('');
       box.appendChild(saboresDiv);
 
+      // Se a opção tiver refrigerante, adiciona a área para escolher refri
       if (opcao.refri) {
         const refriDiv = document.createElement('div');
-        refriDiv.innerHTML = `<strong>Escolha os refrigerantes:</strong>`;
+        refriDiv.classList.add('refri-area');
+        refriDiv.innerHTML = `<strong class="refri-titulo">Escolha os refrigerantes:</strong>`;
         bebidas.filter(b => opcao.tamanhos.some(t => b.nome.includes(t))).forEach(b => {
           const linha = document.createElement('div');
           linha.className = 'item';
@@ -114,44 +178,49 @@ function criarCombos() {
   });
 }
 
-function alterarQtd(btn, delta, comboNome = null) {
-  const span = btn.parentNode.querySelector('span');
-  let qtd = parseInt(span.dataset.qtd);
-  let novo = qtd + delta;
-  if (novo < 0) novo = 0;
-
-  if (comboNome) {
-    const comboKey = comboNome.replace('-refri', '');
-    const combo = combos.flatMap(c => c.opcoes.map(o => ({...o, combo: `${c.nome} – ${o.titulo}`})))
-      .find(c => c.combo === comboKey);
-    const isRefri = comboNome.includes('-refri');
-    const multInput = document.querySelector(`input[data-combo-mult="${comboKey}"]`);
-    const multiplicador = multInput ? Math.max(1, parseInt(multInput.value)) : 1;
-    const max = isRefri ? (combo?.refri || 0) * multiplicador : (combo?.qtd || 0) * multiplicador;
-    const totalAtual = [...document.querySelectorAll(`[data-combo='${comboNome}']`)]
-      .reduce((sum, el) => sum + parseInt(el.dataset.qtd), 0);
-    if (delta > 0 && totalAtual >= max) return;
-  }
-
-  span.dataset.qtd = novo;
-  span.textContent = novo;
+function limparCombo(comboId) {
+  const spans = document.querySelectorAll(`[data-combo='${comboId}'], [data-combo='${comboId}-refri']`);
+  spans.forEach(el => {
+    el.dataset.qtd = '0';
+    el.textContent = '0';
+  });
   atualizar();
 }
+
+function pegarDataHora() {
+  const data = document.getElementById('dataRetirada').value;
+  const hora = document.getElementById('horaRetirada').value;
+  const hoje = new Date();
+  const hojeStr = hoje.toISOString().split('T')[0];
+  if (!data || !hora) return '';
+  if (data === hojeStr) {
+    return `Para hoje às ${hora}`;
+  } else {
+    const partes = data.split('-');
+    return `Para dia ${partes[2]}/${partes[1]} às ${hora}`;
+  }
+}
+
+// 👉 Parte final virá em seguida com a função atualizar completa
+// que inclui os destaques visuais e o novo resumo com data/hora
+// script.js (final - atualização completa)
 
 function atualizar() {
   const spans = document.querySelectorAll('[data-nome]');
   const lista = document.getElementById('lista');
   const nomeCliente = document.getElementById('nomeCliente').value.trim();
   const totalEl = document.getElementById('total');
+  const dataHora = pegarDataHora();
+
   let total = 0;
   let text = '';
   const combosAgrupados = {};
   let avulsos = '';
   const combosUsados = new Set();
-
   const multiplicadores = {};
+
   document.querySelectorAll('input[data-combo-mult]').forEach(input => {
-    multiplicadores[input.dataset.comboMult || input.getAttribute('data-combo-mult')] = Math.max(1, parseInt(input.value));
+    multiplicadores[input.dataset.comboMult] = Math.max(1, parseInt(input.value));
   });
 
   spans.forEach(el => {
@@ -176,8 +245,8 @@ function atualizar() {
     const comboKey = combo.replace('-refri','');
     const comboData = combos.flatMap(c => c.opcoes.map(o => ({...o, combo: `${c.nome} – ${o.titulo}`})))
       .find(c => c.combo === comboKey);
-    if (!combosAdicionados.has(comboKey)) {
-      const mult = multiplicadores[comboKey] || 1;
+    const mult = multiplicadores[comboKey] || 1;
+    if (!combo.includes('-refri') && !combosAdicionados.has(comboKey)) {
       text += `\n${mult}x ${comboKey}\n`;
       total += comboData.preco * mult;
       combosAdicionados.add(comboKey);
@@ -188,12 +257,13 @@ function atualizar() {
   });
 
   if (avulsos) {
-    text += `\nSalgados Avulsos:\n` + avulsos;
+    text += `\nSalgados Avulsos:\n${avulsos}`;
   }
 
   lista.textContent = text || '(nenhum item)';
   totalEl.textContent = `Total: R$${total.toFixed(2)}`;
-  const resumo = `Resumo do pedido de ${nomeCliente || '(cliente)'}\n\n` + text + `\nTotal: R$${total.toFixed(2)}`;
+
+  const resumo = `Resumo do pedido de ${nomeCliente || '(cliente)'}:\n${dataHora ? `${dataHora}\n\n` : ''}${text}\nTotal: R$${total.toFixed(2)}`;
 
   const refriOk = Object.entries(combosAgrupados).every(([combo, itens]) => {
     if (!combo.includes('-refri')) return true;
@@ -215,20 +285,101 @@ function atualizar() {
     return totalSalgados === (comboData?.qtd || 0) * mult;
   });
 
-  const algumItem = spans.length > 0 && [...spans].some(el => parseInt(el.dataset.qtd) > 0);
   const botao = document.getElementById('whatsapp-btn');
 
-  if (nomeCliente && salgadosOk && refriOk && algumItem) {
-    botao.href = `https://wa.me/5573981741968?text=${encodeURIComponent(resumo)}`;
-    botao.style.pointerEvents = 'auto';
-    botao.style.opacity = 1;
-  } else {
+  document.querySelectorAll('[data-combo-box]').forEach(box => {
+    box.classList.remove('erro-combo');
+  });
+
+Object.keys(combosAgrupados).forEach(comboKey => {
+  const baseKey = comboKey.replace('-refri', '');
+  const box = document.querySelector(`[data-combo-box='${baseKey}']`);
+  if (!box) return;
+
+  const isRefriCombo = combos.some(c =>
+    c.opcoes.some(o => `${c.nome} – ${o.titulo}` === baseKey && o.refri)
+  );
+
+  const salgados = Object.entries(combosAgrupados)
+  .filter(([combo]) => combo.replace('-refri', '') === baseKey && !combo.includes('-refri'))
+  .flatMap(([, itens]) => itens)
+  .filter(item => item.qtd > 0);
+
+  const refri = Object.entries(combosAgrupados)
+    .filter(([combo]) => combo === `${baseKey}-refri`)
+    .flatMap(([, itens]) => itens);
+
+  const comboData = combos.flatMap(c => c.opcoes.map(o => ({ ...o, combo: `${c.nome} – ${o.titulo}` })))
+    .find(c => c.combo === baseKey);
+
+  const mult = multiplicadores[baseKey] || 1;
+  const totalSalgados = salgados.reduce((sum, { qtd }) => sum + qtd, 0);
+  const totalEsperadoSalg = (comboData?.qtd || 0) * mult;
+  const totalRefri = refri.reduce((sum, { qtd }) => sum + qtd, 0);
+  const totalEsperadoRefri = (comboData?.refri || 0) * mult;
+
+  const mensagemDiv = box.querySelector('.mensagem-erro');
+
+  if (totalSalgados === 0) {
+  mensagemDiv.style.display = 'none';
+} else if (totalSalgados < totalEsperadoSalg) {
+  mensagemDiv.textContent = `Faltam ${totalEsperadoSalg - totalSalgados} mini salgados para completar o combo.`;
+  mensagemDiv.style.display = 'block';
+} else if (isRefriCombo && totalRefri < totalEsperadoRefri) {
+  mensagemDiv.textContent = `Faltam ${totalEsperadoRefri - totalRefri} refrigerantes para completar o combo.`;
+  mensagemDiv.style.display = 'block';
+} else {
+  mensagemDiv.style.display = 'none';
+}
+});
+
+  if (!nomeCliente || !salgadosOk || !refriOk) {
     botao.href = '#';
     botao.style.pointerEvents = 'none';
     botao.style.opacity = 0.5;
+
     if (!nomeCliente) lista.textContent = 'Por favor, digite seu nome para finalizar.';
-    else if (!algumItem) lista.textContent = 'Selecione pelo menos um item para fazer o pedido.';
-    else if (!salgadosOk) lista.textContent = 'Preencha corretamente os salgados dos combos.';
-    else if (!refriOk) lista.textContent = 'Preencha corretamente os refrigerantes dos combos com bebida.';
+    else if (!salgadosOk) lista.textContent = 'Preencha corretamente a quantidade de salgados em cada combo.';
+    else if (!refriOk) lista.textContent = 'Preencha corretamente os refrigerantes nos combos com bebida.';
+
+    if (!refriOk) {
+      Object.keys(combosAgrupados).forEach(comboKey => {
+        if (comboKey.includes('-refri')) {
+          const box = document.querySelector(`[data-combo-box='${comboKey.replace('-refri','')}']`);
+          if (box) box.classList.add('erro-combo');
+        }
+      });
+    }
+    return;
   }
+
+  botao.href = `https://wa.me/5573981741968?text=${encodeURIComponent(resumo)}`;
+  botao.style.pointerEvents = 'auto';
+  botao.style.opacity = 1;
 }
+
+document.getElementById('nomeCliente').addEventListener('input', atualizar);
+document.getElementById('dataRetirada').addEventListener('change', atualizar);
+document.getElementById('horaRetirada').addEventListener('change', atualizar);
+document.addEventListener('input', atualizar);
+
+criarBloco('salgados', salgadosLista);
+criarBloco('bebidas', bebidas);
+criarCombos();
+atualizar();
+
+window.addEventListener('beforeunload', function (e) {
+  // Verifica se tem algo selecionado no pedido
+  const spans = document.querySelectorAll('[data-qtd]');
+  let pedidoTemItens = false;
+  spans.forEach(el => {
+    if (parseInt(el.dataset.qtd) > 0) pedidoTemItens = true;
+  });
+
+  if (pedidoTemItens) {
+    e.preventDefault();
+    e.returnValue = '';
+    return '';
+  }
+  // Se não tiver nada, não mostra aviso
+});

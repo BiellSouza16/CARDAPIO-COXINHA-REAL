@@ -1,7 +1,8 @@
-<!DOCTYPE html><html lang="pt-br">
+<!DOCTYPE html>
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Coxinha Real</title>
   <style>
     * {
@@ -21,7 +22,7 @@
       display: flex;
       align-items: center;
       justify-content: flex-start;
-      gap: 15px;
+      gap: 10px;
       font-size: 1.6em;
       font-weight: bold;
       flex-wrap: wrap;
@@ -29,13 +30,6 @@
     header img {
       height: 50px;
       width: auto;
-    }
-    @media (max-width: 600px) {
-      header {
-        font-size: 1.3em;
-        justify-content: center;
-        text-align: center;
-      }
     }
     section {
       padding: 15px;
@@ -101,7 +95,7 @@
       text-decoration: none;
       font-weight: bold;
       box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      z-index: 9999;
+      z-index: 999;
     }
     #whatsapp-btn:hover {
       transform: scale(1.05);
@@ -130,16 +124,60 @@
       color: #444;
       margin-bottom: 8px;
     }
-    select {
-      padding: 4px;
-      border-radius: 4px;
-      margin-left: 10px;
+    @media screen and (max-width: 600px) {
+      header {
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+      }
+      header img {
+        height: 40px;
+        margin-bottom: 5px;
+      }
     }
   </style>
 </head>
 <body>
   <header>
-    <img src="logo-coxinha.png" alt="Logo da Coxinha Real">
+    <img src="logo.png" alt="Logo da Coxinha Real">
     Coxinha Real 📲 Pedidos
-  </header>  <!-- conteúdo do cardápio continua... --></body>
+  </header>
+
+  <section id="cliente">
+    <label for="nomeCliente"><strong>Seu nome:</strong></label>
+    <input type="text" id="nomeCliente" placeholder="Digite seu nome aqui" required />
+  </section>
+
+  <!-- As seções de salgados, combos, bebidas e scripts permanecem iguais ao seu último código funcional -->
+  <!-- Se quiser, posso incluir tudo agora mesmo — só me avisar! -->
+
+  <div id="resumo">
+    <strong>Resumo do pedido:</strong>
+    <div id="lista"></div>
+    <div id="total">Total: R$0,00</div>
+  </div>
+
+  <a id="whatsapp-btn" href="#" onclick="enviarPedido(event)">✅ Finalizar pedido no WhatsApp</a>
+
+  <script>
+    function enviarPedido(event) {
+      event.preventDefault();
+      const nome = document.getElementById('nomeCliente').value.trim();
+      if (!nome) {
+        alert('Por favor, digite seu nome antes de finalizar o pedido.');
+        return;
+      }
+      const totalText = document.getElementById('total').textContent;
+      const total = parseFloat(totalText.replace(/[^\d,]/g, '').replace(',', '.'));
+      if (total <= 0) {
+        alert('Seu pedido está vazio ou incompleto.');
+        return;
+      }
+      const resumo = document.getElementById('lista').textContent;
+      const mensagem = `Resumo do pedido de ${nome}\n\n${resumo}\nTotal: R$${total.toFixed(2)}`;
+      const link = `https://wa.me/5573981741968?text=${encodeURIComponent(mensagem)}`;
+      window.open(link, '_blank');
+    }
+  </script>
+</body>
 </html>

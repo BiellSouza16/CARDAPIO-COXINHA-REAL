@@ -1,118 +1,247 @@
-/* style.css */
+/* style.css atualizado com melhorias visuais e interativas */
 
 * {
   box-sizing: border-box;
   transition: all 0.3s ease;
 }
+
 body {
-  font-family: sans-serif;
-  background: #fff3cc;
+  font-family: 'Segoe UI', sans-serif;
+  background: #fff8e1;
   margin: 0;
-  padding-bottom: 100px;
+  padding-bottom: 130px;
+  color: #333;
 }
+
 header {
   background: #ffcc00;
-  color: #000;
+  color: #222;
   padding: 20px;
   text-align: center;
-  font-size: 1.8em;
+  font-size: 2em;
   font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  letter-spacing: 1px;
 }
+
 section {
-  padding: 15px;
+  padding: 16px;
+  max-width: 900px;
+  margin: auto;
 }
+
 h2 {
   color: #cc0000;
   margin-top: 30px;
+  font-size: 1.5em;
+  border-bottom: 2px solid #cc0000;
+  padding-bottom: 6px;
+  margin-bottom: 12px;
+  text-shadow: 0 1px 0 #fff;
 }
+
 .card-box {
   border: 2px solid #ffcc00;
   padding: 15px;
-  margin: 10px 0;
-  background: #fff8dc;
-  border-radius: 10px;
+  margin: 14px 0;
+  background: #fffbe6;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
+
 .item, .bebida, .combo, .sabores .item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 8px 0;
+  margin: 10px 0;
 }
+
 .quantidade {
   display: flex;
-  gap: 5px;
+  gap: 6px;
   align-items: center;
 }
+
 .quantidade button {
   background: #ffcc00;
   border: none;
-  padding: 4px 8px;
+  padding: 6px 10px;
   font-weight: bold;
-  border-radius: 5px;
-  cursor: pointer;
-}
-.obs {
-  font-size: 0.9em;
-  color: #444;
-  background: #ffe680;
-  padding: 8px;
-  margin: 10px 0;
   border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.1em;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
+
+.quantidade button:hover {
+  background: #e6b800;
+}
+
+.obs {
+  font-size: 0.95em;
+  color: #555;
+  background: #fff3c4;
+  padding: 10px;
+  margin: 15px 0;
+  border-radius: 8px;
+  border-left: 5px solid #cc0000;
+}
+
 #resumo, #cliente {
   background: #fff;
   border-top: 2px solid #ccc;
-  padding: 10px;
+  padding: 15px;
   position: sticky;
-  bottom: 70px;
+  bottom: 80px;
+  z-index: 5;
 }
+
 #total {
   font-weight: bold;
-  margin-top: 10px;
+  margin-top: 14px;
+  font-size: 1.2em;
 }
+
 #whatsapp-btn {
   position: fixed;
-  bottom: 10px;
-  right: 10px;
+  bottom: 15px;
+  right: 15px;
   background: #25d366;
   color: white;
-  font-size: 1em;
-  padding: 12px 20px;
+  font-size: 1.1em;
+  padding: 14px 24px;
   border-radius: 30px;
   text-decoration: none;
   font-weight: bold;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  box-shadow: 0 0 12px rgba(0,0,0,0.2);
   transition: all 0.3s ease;
+  z-index: 100;
 }
+
 #whatsapp-btn:hover {
-  transform: scale(1.05);
+  transform: scale(1.07);
   background-color: #1ebd5b;
 }
+
 input[type="text"] {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   margin-top: 10px;
   font-size: 1em;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 2px solid #ccc;
+  border-radius: 6px;
 }
+
+input[type="text"]:invalid {
+  border-color: #ff4444;
+}
+
+input[type="text"]:valid {
+  border-color: #66bb6a;
+}
+
 .sabores {
   padding-left: 20px;
   margin-top: 10px;
 }
+
 .combo-title {
-  font-size: 1.2em;
+  font-size: 1.3em;
   font-weight: bold;
   margin-bottom: 5px;
   color: #b30000;
+  text-shadow: 0 1px 0 #fff;
 }
+
 .combo-sub {
-  font-size: 0.9em;
+  font-size: 0.95em;
   color: #444;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  font-style: italic;
 }
-select {
-  padding: 4px;
-  border-radius: 4px;
+
+select, input[type="number"] {
+  padding: 6px;
+  border-radius: 6px;
   margin-left: 10px;
+  border: 1px solid #bbb;
+  font-size: 0.95em;
+}
+
+.combo-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+button.limpar-combo {
+  background: #ff6666;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button.limpar-combo:hover {
+  background: #cc0000;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding-bottom: 150px;
+  }
+
+  section {
+    padding: 10px 15px;
+  }
+
+  .item, .bebida, .combo, .sabores .item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .quantidade {
+    margin-top: 6px;
+  }
+
+  #whatsapp-btn {
+    padding: 12px 18px;
+    font-size: 1em;
+    bottom: 10px;
+    right: 10px;
+  }
+
+  input[type="text"], select, input[type="number"] {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 6px;
+  }
+
+  .combo-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.logo {
+  height: 100px;
+  width: 100px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: rgb(255, 187, 0);
+  box-shadow: 0 0 6px rgba(0,0,0,0.15);
+  padding: 4px;
 }

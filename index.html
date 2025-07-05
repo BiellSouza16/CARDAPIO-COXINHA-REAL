@@ -2,182 +2,37 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Coxinha Real</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      transition: all 0.3s ease;
-    }
-    body {
-      font-family: sans-serif;
-      background: #fff3cc;
-      margin: 0;
-      padding-bottom: 100px;
-    }
-    header {
-      background: #ffcc00;
-      color: #000;
-      padding: 15px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 10px;
-      font-size: 1.6em;
-      font-weight: bold;
-      flex-wrap: wrap;
-    }
-    header img {
-      height: 50px;
-      width: auto;
-    }
-    section {
-      padding: 15px;
-    }
-    h2 {
-      color: #cc0000;
-      margin-top: 30px;
-    }
-    .card-box {
-      border: 2px solid #ffcc00;
-      padding: 15px;
-      margin: 10px 0;
-      background: #fff8dc;
-      border-radius: 10px;
-    }
-    .item, .bebida, .combo, .sabores .item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 8px 0;
-    }
-    .quantidade {
-      display: flex;
-      gap: 5px;
-      align-items: center;
-    }
-    .quantidade button {
-      background: #ffcc00;
-      border: none;
-      padding: 4px 8px;
-      font-weight: bold;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .obs {
-      font-size: 0.9em;
-      color: #444;
-      background: #ffe680;
-      padding: 8px;
-      margin: 10px 0;
-      border-radius: 6px;
-    }
-    #resumo, #cliente {
-      background: #fff;
-      border-top: 2px solid #ccc;
-      padding: 10px;
-      position: sticky;
-      bottom: 70px;
-    }
-    #total {
-      font-weight: bold;
-      margin-top: 10px;
-    }
-    #whatsapp-btn {
-      position: fixed;
-      bottom: 10px;
-      right: 10px;
-      background: #25d366;
-      color: white;
-      font-size: 1em;
-      padding: 12px 20px;
-      border-radius: 30px;
-      text-decoration: none;
-      font-weight: bold;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      z-index: 999;
-    }
-    #whatsapp-btn:hover {
-      transform: scale(1.05);
-      background-color: #1ebd5b;
-    }
-    input[type="text"] {
-      width: 100%;
-      padding: 8px;
-      margin-top: 10px;
-      font-size: 1em;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    .sabores {
-      padding-left: 20px;
-      margin-top: 10px;
-    }
-    .combo-title {
-      font-size: 1.2em;
-      font-weight: bold;
-      margin-bottom: 5px;
-      color: #b30000;
-    }
-    .combo-sub {
-      font-size: 0.9em;
-      color: #444;
-      margin-bottom: 8px;
-    }
-    @media screen and (max-width: 600px) {
-      header {
-        flex-direction: column;
-        justify-content: center;
-        text-align: center;
-      }
-      header img {
-        height: 40px;
-        margin-bottom: 5px;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <img src="logo.png" alt="Logo da Coxinha Real">
-    Coxinha Real 📲 Pedidos
-  </header>
-
+  <header>Coxinha Real 📲 Pedidos</header>
   <section id="cliente">
     <label for="nomeCliente"><strong>Seu nome:</strong></label>
-    <input type="text" id="nomeCliente" placeholder="Digite seu nome aqui" required />
+    <input type="text" id="nomeCliente" placeholder="Digite seu nome aqui" />
   </section>
-
-  <!-- As seções de salgados, combos, bebidas e scripts permanecem iguais ao seu último código funcional -->
-  <!-- Se quiser, posso incluir tudo agora mesmo — só me avisar! -->
-
+  <section>
+    <h2>Salgados (35g – R$1,00)</h2>
+    <div id="salgados"></div>
+  </section>
+  <section>
+    <h2>Bebidas</h2>
+    <div id="bebidas"></div>
+  </section>
+  <section>
+    <h2>Combos (salgados 20g)</h2>
+    <div class="obs">
+      * Os salgados dos combos possuem 20g. Os salgados avulsos possuem 35g.
+    </div>
+    <div id="combos"></div>
+  </section>
   <div id="resumo">
     <strong>Resumo do pedido:</strong>
     <div id="lista"></div>
     <div id="total">Total: R$0,00</div>
   </div>
-
-  <a id="whatsapp-btn" href="#" onclick="enviarPedido(event)">✅ Finalizar pedido no WhatsApp</a>
-
-  <script>
-    function enviarPedido(event) {
-      event.preventDefault();
-      const nome = document.getElementById('nomeCliente').value.trim();
-      if (!nome) {
-        alert('Por favor, digite seu nome antes de finalizar o pedido.');
-        return;
-      }
-      const totalText = document.getElementById('total').textContent;
-      const total = parseFloat(totalText.replace(/[^\d,]/g, '').replace(',', '.'));
-      if (total <= 0) {
-        alert('Seu pedido está vazio ou incompleto.');
-        return;
-      }
-      const resumo = document.getElementById('lista').textContent;
-      const mensagem = `Resumo do pedido de ${nome}\n\n${resumo}\nTotal: R$${total.toFixed(2)}`;
-      const link = `https://wa.me/5573981741968?text=${encodeURIComponent(mensagem)}`;
-      window.open(link, '_blank');
-    }
-  </script>
+  <a id="whatsapp-btn" href="#" target="_blank">✅ Finalizar pedido no WhatsApp</a>
+  <script src="script.js"></script>
 </body>
 </html>

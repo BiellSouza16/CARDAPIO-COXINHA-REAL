@@ -1,3 +1,5 @@
+// script.js (completo)
+
 const salgadosLista = [
   "Coxinha (Frango)", "Palitinho (Queijo com Presunto)", "Balãozinho (Frango com Requeijão)",
   "Travesseirinho (Carne)", "Kibe de Queijo", "Kibe de Carne",
@@ -32,6 +34,16 @@ const combos = [
     { titulo: "Com 1 refri de 2L", preco: 70, qtd: 100, refri: 1, tamanhos: ["2L", "IT"] }
   ]},
 ];
+
+// Inicia a interface
+criarBloco('salgados', salgadosLista);
+criarBloco('bebidas', bebidas);
+criarCombos();
+
+// Atualiza o resumo sempre que o nome ou algo for alterado
+atualizar();
+document.getElementById('nomeCliente').addEventListener('input', atualizar);
+document.addEventListener('input', atualizar);
 
 function criarBloco(id, itens, precoFixo = 1) {
   const container = document.getElementById(id);
@@ -76,7 +88,6 @@ function criarCombos() {
             <button onclick="alterarQtd(this, 1, '${idCombo}')">+</button>
           </div>
         </div>`).join('');
-
       box.appendChild(saboresDiv);
 
       if (opcao.refri) {
@@ -114,15 +125,11 @@ function alterarQtd(btn, delta, comboNome = null) {
     const combo = combos.flatMap(c => c.opcoes.map(o => ({...o, combo: `${c.nome} – ${o.titulo}`})))
       .find(c => c.combo === comboKey);
     const isRefri = comboNome.includes('-refri');
-
     const multInput = document.querySelector(`input[data-combo-mult="${comboKey}"]`);
     const multiplicador = multInput ? Math.max(1, parseInt(multInput.value)) : 1;
-
     const max = isRefri ? (combo?.refri || 0) * multiplicador : (combo?.qtd || 0) * multiplicador;
-
     const totalAtual = [...document.querySelectorAll(`[data-combo='${comboNome}']`)]
       .reduce((sum, el) => sum + parseInt(el.dataset.qtd), 0);
-
     if (delta > 0 && totalAtual >= max) return;
   }
 
@@ -208,8 +215,10 @@ function atualizar() {
     return totalSalgados === (comboData?.qtd || 0) * mult;
   });
 
+  const algumItem = spans.length > 0 && [...spans].some(el => parseInt(el.dataset.qtd) > 0);
   const botao = document.getElementById('whatsapp-btn');
-  if (nomeCliente && salgadosOk && refriOk) {
+
+  if (nomeCliente && salgadosOk && refriOk && algumItem) {
     botao.href = `https://wa.me/5573981741968?text=${encodeURIComponent(resumo)}`;
     botao.style.pointerEvents = 'auto';
     botao.style.opacity = 1;
@@ -218,15 +227,8 @@ function atualizar() {
     botao.style.pointerEvents = 'none';
     botao.style.opacity = 0.5;
     if (!nomeCliente) lista.textContent = 'Por favor, digite seu nome para finalizar.';
-    else if (!salgadosOk) lista.textContent = 'Preencha corretamente a quantidade de salgados em cada combo.';
-    else if (!refriOk) lista.textContent = 'Preencha corretamente a quantidade de refrigerantes nos combos.';
+    else if (!algumItem) lista.textContent = 'Selecione pelo menos um item para fazer o pedido.';
+    else if (!salgadosOk) lista.textContent = 'Preencha corretamente os salgados dos combos.';
+    else if (!refriOk) lista.textContent = 'Preencha corretamente os refrigerantes dos combos com bebida.';
   }
 }
-
-document.getElementById('nomeCliente').addEventListener('input', atualizar);
-document.addEventListener('input', atualizar);
-
-criarBloco('salgados', salgadosLista);
-criarBloco('bebidas', bebidas);
-criarCombos();
-atualizar();

@@ -1,4 +1,4 @@
-/* style.css atualizado com melhorias visuais e interativas */
+/* style.css - atualizado com melhorias visuais */
 
 * {
   box-sizing: border-box;
@@ -27,6 +27,23 @@ header {
   letter-spacing: 1px;
 }
 
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.logo {
+  height: 100px;
+  width: 100px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: rgb(255, 187, 0);
+  box-shadow: 0 0 6px rgba(0,0,0,0.15);
+  padding: 4px;
+}
+
 section {
   padding: 16px;
   max-width: 900px;
@@ -50,6 +67,17 @@ h2 {
   background: #fffbe6;
   border-radius: 12px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.card-box.erro-combo {
+  border: 2px solid #ff4444;
+  background-color: #ffe5e5;
+}
+.mensagem-erro {
+  color: red;
+  font-weight: bold;
+  margin-top: 8px;
+  display: none; /* Escondido por padrão */
 }
 
 .item, .bebida, .combo, .sabores .item {
@@ -99,6 +127,17 @@ h2 {
   z-index: 5;
 }
 
+.agendamento {
+  margin-top: 12px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.agendamento label {
+  font-weight: 600;
+}
+
 #total {
   font-weight: bold;
   margin-top: 14px;
@@ -126,21 +165,13 @@ h2 {
   background-color: #1ebd5b;
 }
 
-input[type="text"] {
+input[type="text"], input[type="date"], input[type="time"] {
   width: 100%;
   padding: 10px;
   margin-top: 10px;
   font-size: 1em;
   border: 2px solid #ccc;
   border-radius: 6px;
-}
-
-input[type="text"]:invalid {
-  border-color: #ff4444;
-}
-
-input[type="text"]:valid {
-  border-color: #66bb6a;
 }
 
 .sabores {
@@ -218,7 +249,7 @@ button.limpar-combo:hover {
     right: 10px;
   }
 
-  input[type="text"], select, input[type="number"] {
+  input[type="text"], select, input[type="number"], input[type="date"], input[type="time"] {
     width: 100%;
     margin-left: 0;
     margin-top: 6px;
@@ -228,20 +259,4 @@ button.limpar-combo:hover {
     flex-direction: column;
     gap: 8px;
   }
-}
-.logo-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
-
-.logo {
-  height: 100px;
-  width: 100px;
-  object-fit: contain;
-  border-radius: 50%;
-  background: rgb(255, 187, 0);
-  box-shadow: 0 0 6px rgba(0,0,0,0.15);
-  padding: 4px;
 }

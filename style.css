@@ -260,3 +260,12 @@ button.limpar-combo:hover {
     gap: 8px;
   }
 }
+@keyframes piscar-vermelho {
+  0% { box-shadow: 0 0 0px red; }
+  50% { box-shadow: 0 0 10px red; }
+  100% { box-shadow: 0 0 0px red; }
+}
+
+.erro-combo {
+  animation: piscar-vermelho 0.6s ease;
+}

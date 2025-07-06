@@ -100,14 +100,12 @@ function criarBloco(id, itens, precoFixo = 1) {
     const box = document.createElement('div');
     box.className = 'card-box';
     box.innerHTML = `
-      <div class="item">
-        <span>${texto}</span>
-        <div class="quantidade">
-          <button onclick="alterarQtd(this, -1)">-</button>
-          <span data-nome="${nome}" data-preco="${preco}" data-qtd="0">0</span>
-          <button onclick="alterarQtd(this, 1)">+</button>
-        </div>
-      </div>`;
+  <div class="item">
+    <span>${texto}</span>
+    <div class="quantidade">
+      <input type="number" min="0" value="0" data-nome="${nome}" data-preco="${preco}" data-qtd="0">
+    </div>
+  </div>`;
     container.appendChild(box);
   });
 }
@@ -145,10 +143,8 @@ function criarCombos() {
         <div class="item">
           <span>${sabor}</span>
           <div class="quantidade">
-            <button onclick="alterarQtd(this, -1, '${idCombo}')">-</button>
-            <span data-nome="${sabor}" data-preco="0" data-qtd="0" data-combo="${idCombo}">0</span>
-            <button onclick="alterarQtd(this, 1, '${idCombo}')">+</button>
-          </div>
+  <input type="number" min="0" value="0" data-nome="${sabor}" data-preco="0" data-qtd="0" data-combo="${idCombo}">
+</div>
         </div>`).join('');
       box.appendChild(saboresDiv);
 
@@ -163,10 +159,8 @@ function criarCombos() {
           linha.innerHTML = `
             <span>${b.nome}</span>
             <div class="quantidade">
-              <button onclick="alterarQtd(this, -1, '${idCombo}-refri')">-</button>
-              <span data-nome="${b.nome}" data-preco="0" data-qtd="0" data-combo="${idCombo}-refri">0</span>
-              <button onclick="alterarQtd(this, 1, '${idCombo}-refri')">+</button>
-            </div>
+  <input type="number" min="0" value="0" data-nome="${b.nome}" data-preco="0" data-qtd="0" data-combo="${idCombo}-refri">
+</div>
           `;
           refriDiv.appendChild(linha);
         });
@@ -207,8 +201,13 @@ function pegarDataHora() {
 
 function atualizar() {
   const spans = document.querySelectorAll('[data-nome]');
+spans.forEach(el => {
+  let qtd = parseInt(el.value || el.textContent || '0');
+  el.dataset.qtd = qtd;
+});
   const lista = document.getElementById('lista');
   const nomeCliente = document.getElementById('nomeCliente').value.trim();
+  const pagamentoConfirmado = document.getElementById('checkboxPagamento')?.checked;
   const totalEl = document.getElementById('total');
   const dataHora = pegarDataHora();
 
@@ -333,7 +332,8 @@ Object.keys(combosAgrupados).forEach(comboKey => {
 }
 });
 
-  if (!nomeCliente || !salgadosOk || !refriOk) {
+  if (!nomeCliente || !salgadosOk || !refriOk || !pagamentoConfirmado) {
+    if (!pagamentoConfirmado) lista.textContent = 'Você deve marcar a confirmação de pagamento de 50% para prosseguir.';
     botao.href = '#';
     botao.style.pointerEvents = 'none';
     botao.style.opacity = 0.5;
@@ -343,13 +343,29 @@ Object.keys(combosAgrupados).forEach(comboKey => {
     else if (!refriOk) lista.textContent = 'Preencha corretamente os refrigerantes nos combos com bebida.';
 
     if (!refriOk) {
-      Object.keys(combosAgrupados).forEach(comboKey => {
-        if (comboKey.includes('-refri')) {
-          const box = document.querySelector(`[data-combo-box='${comboKey.replace('-refri','')}']`);
-          if (box) box.classList.add('erro-combo');
+  Object.keys(combosAgrupados).forEach(comboKey => {
+    if (comboKey.includes('-refri')) {
+      const baseKey = comboKey.replace('-refri', '');
+      const box = document.querySelector(`[data-combo-box='${baseKey}']`);
+      const mensagemDiv = box?.querySelector('.mensagem-erro');
+      const comboData = combos.flatMap(c => c.opcoes.map(o => ({...o, combo: `${c.nome} – ${o.titulo}`})))
+        .find(c => c.combo === baseKey);
+      const mult = multiplicadores[baseKey] || 1;
+      const esperado = (comboData?.refri || 0) * mult;
+
+      const total = (combosAgrupados[comboKey] || []).reduce((sum, item) => sum + item.qtd, 0);
+      const faltam = esperado - total;
+
+      if (box && faltam > 0) {
+        box.classList.add('erro-combo');
+        if (mensagemDiv) {
+          mensagemDiv.textContent = `Faltam ${faltam} refrigerantes para completar o combo.`;
+          mensagemDiv.style.display = 'block';
         }
-      });
+      }
     }
+  });
+}
     return;
   }
 
@@ -362,11 +378,96 @@ document.getElementById('nomeCliente').addEventListener('input', atualizar);
 document.getElementById('dataRetirada').addEventListener('change', atualizar);
 document.getElementById('horaRetirada').addEventListener('change', atualizar);
 document.addEventListener('input', atualizar);
+document.querySelectorAll('input[data-combo-mult]').forEach(input => {
+  input.addEventListener('input', () => {
+    const comboKey = input.dataset.comboMult;
+    const comboData = combos.flatMap(c => c.opcoes.map(o => ({ ...o, combo: `${c.nome} – ${o.titulo}` })))
+      .find(c => c.combo === comboKey);
+
+    const mult = Math.max(1, parseInt(input.value));
+    const box = document.querySelector(`[data-combo-box='${comboKey}']`);
+    if (!comboData || !box) return;
+
+    // Conta os salgados e refri atuais
+    const spansSalgados = document.querySelectorAll(`span[data-combo='${comboKey}']`);
+    const totalSalgados = Array.from(spansSalgados).reduce((sum, el) => sum + parseInt(el.dataset.qtd), 0);
+
+    const esperadoSalg = (comboData.qtd || 0) * mult;
+
+    if (totalSalgados > esperadoSalg) {
+      box.classList.add('erro-combo');
+      setTimeout(() => box.classList.remove('erro-combo'), 600);
+    }
+
+    if (comboData.refri) {
+      const spansRefri = document.querySelectorAll(`span[data-combo='${comboKey}-refri']`);
+      const totalRefri = Array.from(spansRefri).reduce((sum, el) => sum + parseInt(el.dataset.qtd), 0);
+      const esperadoRefri = comboData.refri * mult;
+
+      if (totalRefri > esperadoRefri) {
+        box.classList.add('erro-combo');
+        setTimeout(() => box.classList.remove('erro-combo'), 600);
+      }
+    }
+  });
+});
+document.getElementById('checkboxPagamento').addEventListener('change', atualizar);
 
 criarBloco('salgados', salgadosLista);
 criarBloco('bebidas', bebidas);
 criarCombos();
 atualizar();
+
+document.addEventListener('input', e => {
+  const input = e.target;
+  if (!input.matches('input[data-nome]')) return;
+
+  const comboId = input.dataset.combo;
+  const nome = input.dataset.nome;
+  const isRefri = comboId?.endsWith('-refri');
+  const baseId = comboId?.replace('-refri', '');
+
+  if (!comboId) return; // Se não for combo, sai
+
+  const comboData = combos.flatMap(c =>
+    c.opcoes.map(o => ({
+      ...o,
+      combo: `${c.nome} – ${o.titulo}`,
+    }))
+  ).find(c => c.combo === baseId);
+
+  if (!comboData) return;
+
+  const multInput = document.querySelector(`input[data-combo-mult="${baseId}"]`);
+  const mult = multInput ? Math.max(1, parseInt(multInput.value)) : 1;
+
+  const limite = isRefri
+    ? (comboData.refri || 0) * mult
+    : (comboData.qtd || 0) * mult;
+
+  const inputsDoGrupo = document.querySelectorAll(`input[data-combo="${comboId}"]`);
+  let soma = 0;
+  inputsDoGrupo.forEach(el => {
+    soma += parseInt(el.value || 0);
+  });
+
+  if (soma > limite) {
+    // Reverte o último campo para não ultrapassar
+    const excedente = soma - limite;
+    const atual = parseInt(input.value || 0);
+    input.value = Math.max(0, atual - excedente);
+    input.dataset.qtd = input.value;
+
+    // Piscar borda vermelha
+    const box = document.querySelector(`[data-combo-box='${baseId}']`);
+    if (box) {
+      box.classList.add('erro-combo');
+      setTimeout(() => box.classList.remove('erro-combo'), 800);
+    }
+
+    atualizar(); // Atualiza novamente com o valor corrigido
+  }
+});
 
 window.addEventListener('beforeunload', function (e) {
   // Verifica se tem algo selecionado no pedido

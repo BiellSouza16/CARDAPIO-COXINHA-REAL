@@ -186,6 +186,7 @@ function limparCombo(comboId) {
     if (msg) msg.style.display = 'none';
   }
 
+
 }
 
 function pegarDataHora() {
@@ -349,6 +350,7 @@ Object.keys(combosAgrupados).forEach(comboKey => {
     botao.href = '#';
     botao.style.pointerEvents = 'none';
     botao.style.opacity = 0.5;
+    botao.classList.remove('pronto');
 
     if (!nomeCliente) {
       lista.textContent = 'Por favor, digite seu nome para continuar.';
@@ -393,6 +395,7 @@ Object.keys(combosAgrupados).forEach(comboKey => {
   botao.href = `https://wa.me/5573981741968?text=${encodeURIComponent(resumo)}`;
   botao.style.pointerEvents = 'auto';
   botao.style.opacity = 1;
+  botao.classList.add('pronto');
 }
 
 document.getElementById('nomeCliente').addEventListener('input', atualizar);
@@ -488,8 +491,6 @@ document.addEventListener('input', e => {
 
     atualizar(); // Atualiza novamente com o valor corrigido
   }
-  // ✅ Adicione isso aqui fora do IF (roda sempre que muda algo manualmente)
-  atualizar();
 });
 
 window.addEventListener('beforeunload', function (e) {

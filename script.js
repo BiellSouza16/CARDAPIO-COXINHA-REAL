@@ -398,6 +398,28 @@ Object.keys(combosAgrupados).forEach(comboKey => {
   botao.style.pointerEvents = 'none';
   botao.style.opacity = 0.5;
   botao.classList.remove('pronto');
+  const botaoWhatsapp = document.getElementById('whatsapp-btn');
+const modal = document.getElementById('modalConfirmacao');
+const confirmarEnvio = document.getElementById('confirmarEnvio');
+const cancelarEnvio = document.getElementById('cancelarEnvio');
+
+let linkFinalWhatsApp = '';
+
+botaoWhatsapp.addEventListener('click', function(e) {
+  if (!botaoWhatsapp.classList.contains('pronto')) return;
+  e.preventDefault(); // Impede envio imediato
+  linkFinalWhatsApp = botaoWhatsapp.href;
+  modal.style.display = 'flex';
+});
+
+confirmarEnvio.addEventListener('click', function() {
+  modal.style.display = 'none';
+  window.open(linkFinalWhatsApp, '_blank');
+});
+
+cancelarEnvio.addEventListener('click', function() {
+  modal.style.display = 'none';
+});
   return;
 }
   botao.href = `https://wa.me/5573981741968?text=${encodeURIComponent(resumo)}`;

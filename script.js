@@ -173,12 +173,19 @@ function criarCombos() {
 }
 
 function limparCombo(comboId) {
-  const spans = document.querySelectorAll(`[data-combo='${comboId}'], [data-combo='${comboId}-refri']`);
-  spans.forEach(el => {
-    el.dataset.qtd = '0';
-    el.textContent = '0';
+  const inputs = document.querySelectorAll(`input[data-combo='${comboId}'], input[data-combo='${comboId}-refri']`);
+  inputs.forEach(input => {
+    input.value = 0;
+    input.dataset.qtd = 0;
   });
   atualizar();
+
+  const box = document.querySelector(`[data-combo-box="${comboId}"]`);
+  if (box) {
+    const msg = box.querySelector('.mensagem-erro');
+    if (msg) msg.style.display = 'none';
+  }
+
 }
 
 function pegarDataHora() {
@@ -264,14 +271,20 @@ spans.forEach(el => {
 
   const resumo = `Resumo do pedido de ${nomeCliente || '(cliente)'}:\n${dataHora ? `${dataHora}\n\n` : ''}${text}\nTotal: R$${total.toFixed(2)}`;
 
-  const refriOk = Object.entries(combosAgrupados).every(([combo, itens]) => {
-    if (!combo.includes('-refri')) return true;
-    const comboData = combos.flatMap(c => c.opcoes.map(o => ({...o, combo: `${c.nome} – ${o.titulo}`})))
-      .find(c => `${c.combo}-refri` === combo);
-    const totalRefri = itens.reduce((sum, {qtd}) => sum + qtd, 0);
-    const mult = multiplicadores[combo.replace('-refri','')] || 1;
-    return totalRefri === (comboData?.refri || 0) * mult;
-  });
+  const refriOk = Array.from(combosUsados).every(comboKey => {
+  const comboData = combos.flatMap(c => c.opcoes.map(o => ({ ...o, combo: `${c.nome} – ${o.titulo}` })))
+    .find(c => c.combo === comboKey);
+  const mult = multiplicadores[comboKey] || 1;
+
+  // Se o combo NÃO tiver refrigerante, está OK
+  if (!comboData?.refri) return true;
+
+  const refriComboKey = `${comboKey}-refri`;
+  const totalRefri = (combosAgrupados[refriComboKey] || []).reduce((sum, { qtd }) => sum + qtd, 0);
+  const esperado = (comboData.refri || 0) * mult;
+
+  return totalRefri === esperado;
+});
 
   const salgadosOk = Array.from(combosUsados).every(comboKey => {
     const salgados = Object.entries(combosAgrupados)
@@ -333,42 +346,50 @@ Object.keys(combosAgrupados).forEach(comboKey => {
 });
 
   if (!nomeCliente || !salgadosOk || !refriOk || !pagamentoConfirmado) {
-    if (!pagamentoConfirmado) lista.textContent = 'Você deve marcar a confirmação de pagamento de 50% para prosseguir.';
     botao.href = '#';
     botao.style.pointerEvents = 'none';
     botao.style.opacity = 0.5;
 
-    if (!nomeCliente) lista.textContent = 'Por favor, digite seu nome para finalizar.';
-    else if (!salgadosOk) lista.textContent = 'Preencha corretamente a quantidade de salgados em cada combo.';
-    else if (!refriOk) lista.textContent = 'Preencha corretamente os refrigerantes nos combos com bebida.';
-
-    if (!refriOk) {
-  Object.keys(combosAgrupados).forEach(comboKey => {
-    if (comboKey.includes('-refri')) {
-      const baseKey = comboKey.replace('-refri', '');
-      const box = document.querySelector(`[data-combo-box='${baseKey}']`);
-      const mensagemDiv = box?.querySelector('.mensagem-erro');
-      const comboData = combos.flatMap(c => c.opcoes.map(o => ({...o, combo: `${c.nome} – ${o.titulo}`})))
-        .find(c => c.combo === baseKey);
-      const mult = multiplicadores[baseKey] || 1;
-      const esperado = (comboData?.refri || 0) * mult;
-
-      const total = (combosAgrupados[comboKey] || []).reduce((sum, item) => sum + item.qtd, 0);
-      const faltam = esperado - total;
-
-      if (box && faltam > 0) {
-        box.classList.add('erro-combo');
-        if (mensagemDiv) {
-          mensagemDiv.textContent = `Faltam ${faltam} refrigerantes para completar o combo.`;
-          mensagemDiv.style.display = 'block';
-        }
-      }
+    if (!nomeCliente) {
+      lista.textContent = 'Por favor, digite seu nome para continuar.';
+    } else if (!salgadosOk) {
+      lista.textContent = 'Preencha corretamente a quantidade de salgados em cada combo.';
+    } else if (!refriOk) {
+      lista.textContent = 'Preencha corretamente os refrigerantes nos combos com bebida.';
+    } else if (!pagamentoConfirmado) {
+      lista.textContent = 'Você deve marcar a confirmação de pagamento de 50% para prosseguir.';
     }
-  });
-}
-    return;
+
+    // Destaque visual para combos com refrigerantes incompletos
+    if (!refriOk) {
+      Object.keys(combosAgrupados).forEach(comboKey => {
+        if (comboKey.includes('-refri')) {
+          const baseKey = comboKey.replace('-refri', '');
+          const box = document.querySelector(`[data-combo-box='${baseKey}']`);
+          const mensagemDiv = box?.querySelector('.mensagem-erro');
+          const comboData = combos.flatMap(c => c.opcoes.map(o => ({...o, combo: `${c.nome} – ${o.titulo}`})))
+            .find(c => c.combo === baseKey);
+          const mult = multiplicadores[baseKey] || 1;
+          const esperado = (comboData?.refri || 0) * mult;
+
+          const total = (combosAgrupados[comboKey] || []).reduce((sum, item) => sum + item.qtd, 0);
+          const faltam = esperado - total;
+
+          if (box && faltam > 0) {
+            box.classList.add('erro-combo');
+            if (mensagemDiv) {
+              mensagemDiv.textContent = `Faltam ${faltam} refrigerantes para completar o combo.`;
+              mensagemDiv.style.display = 'block';
+            }
+          }
+        }
+      });
+    }
+
+    return; // <-- termina aqui se estiver com erro
   }
 
+  // ✅ Caso tudo esteja correto, libera o botão de WhatsApp
   botao.href = `https://wa.me/5573981741968?text=${encodeURIComponent(resumo)}`;
   botao.style.pointerEvents = 'auto';
   botao.style.opacity = 1;
@@ -467,6 +488,8 @@ document.addEventListener('input', e => {
 
     atualizar(); // Atualiza novamente com o valor corrigido
   }
+  // ✅ Adicione isso aqui fora do IF (roda sempre que muda algo manualmente)
+  atualizar();
 });
 
 window.addEventListener('beforeunload', function (e) {

@@ -392,6 +392,14 @@ Object.keys(combosAgrupados).forEach(comboKey => {
   }
 
   // ✅ Caso tudo esteja correto, libera o botão de WhatsApp
+  if (!text.trim()) {
+  lista.textContent = 'Adicione pelo menos um item ao pedido.';
+  botao.href = '#';
+  botao.style.pointerEvents = 'none';
+  botao.style.opacity = 0.5;
+  botao.classList.remove('pronto');
+  return;
+}
   botao.href = `https://wa.me/5573981741968?text=${encodeURIComponent(resumo)}`;
   botao.style.pointerEvents = 'auto';
   botao.style.opacity = 1;

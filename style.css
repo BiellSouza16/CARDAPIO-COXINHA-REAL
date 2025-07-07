@@ -269,3 +269,30 @@ button.limpar-combo:hover {
 .erro-combo {
   animation: piscar-vermelho 0.6s ease;
 }
+.card-box:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: #ffa500;
+  background-color: #fffbe0;
+  cursor: pointer;
+}
+#nomeCliente:focus {
+  border-color: #ffcc00;
+  box-shadow: 0 0 8px #ffcc00;
+  background: #fffbe6;
+}
+#whatsapp-btn.pronto {
+  animation: pulsar 1.2s infinite;
+}
+
+@keyframes pulsar {
+  0% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(37, 211, 102, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+  }
+}

@@ -381,7 +381,7 @@ button.limpar-combo:hover {
 
 /* Checkbox maior e estilizado */
 #checkboxPagamento {
-  transform: scale(1.6);
+  transform: scale(2.0);
   cursor: pointer;
   accent-color: #700101;
 }
@@ -405,8 +405,8 @@ button.limpar-combo:hover {
 /* ✅ Após confirmação: fundo verde vibrante */
 #confirmacaoPagamento.confirmado {
   animation: none;
-  background-color: #d4f8d4; /* Fundo verde claro mais vivo */
-  border: 3px solid #28a745; /* Verde vibrante */
+  background-color: #1eff52; /* Fundo verde claro mais vivo */
+  border: 3px solid #0d7204; /* Verde vibrante */
   color: #000; /* Texto preto */
   box-shadow: 0 0 10px #28a745; /* Efeito de destaque */
 }

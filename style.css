@@ -364,86 +364,63 @@ button.limpar-combo:hover {
   from { transform: scale(0.9); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
+/* 🔴 Fundo piscando vermelho até marcar */
 #confirmacaoPagamento {
-  border: 3px solid #ff0000;
-  background-color: #fff3e0;
-  padding: 16px;
-  border-radius: 10px;
-  margin-top: 20px;
-  animation: piscar-confirmacao 1.5s infinite;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-#checkboxPagamento {
-  transform: scale(1.6);
-  cursor: pointer;
-  accent-color: #cc0000; /* deixa o check vermelho */
-}
-
-#confirmacaoPagamento label {
-  font-size: 1.1rem;
-  font-weight: bold;
-  cursor: pointer;
-  color: #b30000;
-}
-
-@keyframes piscar-confirmacao {
-  0%, 100% {
-    border-color: #ff0000;
-    box-shadow: 0 0 6px #ff0000;
-  }
-  50% {
-    border-color: #ffcc00;
-    box-shadow: 0 0 12px #ffcc00;
-  }
-}
-/* 🔴 Antes de confirmar (fundo piscando vermelho) */
-#confirmacaoPagamento {
-  background-color: #ffe5e5;
-  border: 3px solid #ff0000;
+  background-color: #ffd6d6;
+  border: 3px solid #cc0000;
   padding: 16px;
   border-radius: 10px;
   margin-top: 20px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  animation: piscar-fundo-vermelho 1.2s infinite;
+  animation: piscar-fundo-vermelho 1.0s infinite;
+  color: #7c0202;
+  font-weight: bold;
 }
 
-/* Aumenta e estiliza a checkbox */
+/* Checkbox maior e estilizado */
 #checkboxPagamento {
   transform: scale(1.6);
   cursor: pointer;
-  accent-color: #cc0000;
+  accent-color: #700101;
 }
 
-/* Texto */
-#confirmacaoPagamento label {
+/* Estilo do texto da label */
+#confirmacaoPagamento label span {
   font-size: 1.1rem;
-  font-weight: bold;
-  cursor: pointer;
-  color: #b30000;
+  color: #700101;
 }
 
 /* 🔁 Animação de fundo vermelho */
 @keyframes piscar-fundo-vermelho {
   0%, 100% {
-    background-color: #ffe5e5;
+    background-color: #ffd6d6;
   }
   50% {
-    background-color: #ffcccc;
+    background-color: #ffb3b3;
   }
 }
 
-/* ✅ Após confirmação (fundo verde sólido, sem animação) */
+/* ✅ Após confirmação: fundo verde vibrante */
 #confirmacaoPagamento.confirmado {
   animation: none;
-  background-color: #d4edda !important;
-  border: 3px solid #28a745;
+  background-color: #d4f8d4; /* Fundo verde claro mais vivo */
+  border: 3px solid #28a745; /* Verde vibrante */
+  color: #000; /* Texto preto */
+  box-shadow: 0 0 10px #28a745; /* Efeito de destaque */
 }
 
-#confirmacaoPagamento.confirmado label {
-  color: #155724;
+#confirmacaoPagamento.confirmado strong {
+  color: #000; /* Garante que o título também fique preto */
+}
+
+#confirmacaoPagamento.confirmado label span {
+  color: #000;
+  font-weight: bold;
+}
+
+/* Letras pretas quando confirmado */
+#confirmacaoPagamento.confirmado label span {
+  color: #000;
 }

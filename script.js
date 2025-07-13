@@ -591,6 +591,17 @@ document.addEventListener('input', e => {
     atualizar(); // Atualiza novamente com o valor corrigido
   }
 });
+// Marca visual da confirmação da checkbox
+const checkbox = document.getElementById('checkboxPagamento');
+const caixaConfirmacao = document.getElementById('confirmacaoPagamento');
+
+checkbox.addEventListener('change', () => {
+  if (checkbox.checked) {
+    caixaConfirmacao.classList.add('confirmado');
+  } else {
+    caixaConfirmacao.classList.remove('confirmado');
+  }
+});
 
 window.addEventListener('beforeunload', function (e) {
   // Verifica se tem algo selecionado no pedido

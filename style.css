@@ -364,3 +364,86 @@ button.limpar-combo:hover {
   from { transform: scale(0.9); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
+#confirmacaoPagamento {
+  border: 3px solid #ff0000;
+  background-color: #fff3e0;
+  padding: 16px;
+  border-radius: 10px;
+  margin-top: 20px;
+  animation: piscar-confirmacao 1.5s infinite;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#checkboxPagamento {
+  transform: scale(1.6);
+  cursor: pointer;
+  accent-color: #cc0000; /* deixa o check vermelho */
+}
+
+#confirmacaoPagamento label {
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  color: #b30000;
+}
+
+@keyframes piscar-confirmacao {
+  0%, 100% {
+    border-color: #ff0000;
+    box-shadow: 0 0 6px #ff0000;
+  }
+  50% {
+    border-color: #ffcc00;
+    box-shadow: 0 0 12px #ffcc00;
+  }
+}
+/* 🔴 Antes de confirmar (fundo piscando vermelho) */
+#confirmacaoPagamento {
+  background-color: #ffe5e5;
+  border: 3px solid #ff0000;
+  padding: 16px;
+  border-radius: 10px;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: piscar-fundo-vermelho 1.2s infinite;
+}
+
+/* Aumenta e estiliza a checkbox */
+#checkboxPagamento {
+  transform: scale(1.6);
+  cursor: pointer;
+  accent-color: #cc0000;
+}
+
+/* Texto */
+#confirmacaoPagamento label {
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  color: #b30000;
+}
+
+/* 🔁 Animação de fundo vermelho */
+@keyframes piscar-fundo-vermelho {
+  0%, 100% {
+    background-color: #ffe5e5;
+  }
+  50% {
+    background-color: #ffcccc;
+  }
+}
+
+/* ✅ Após confirmação (fundo verde sólido, sem animação) */
+#confirmacaoPagamento.confirmado {
+  animation: none;
+  background-color: #d4edda !important;
+  border: 3px solid #28a745;
+}
+
+#confirmacaoPagamento.confirmado label {
+  color: #155724;
+}

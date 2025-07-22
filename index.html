@@ -25,14 +25,16 @@
 
       <label for="horaRetirada"><strong>Hora da retirada:</strong></label>
       <input type="time" id="horaRetirada">
-      <div id="confirmacaoPagamento" style="margin-top: 15px; padding: 12px; background: #fff8d3; border: 2px solid #ffc107; border-radius: 8px;">
-  <strong style="color: #b00000;">⚠️ PARA CONFIRMAÇÃO DO PEDIDO É NECESSÁRIO O ADIANTAMENTO DE NO MÍNIMO 50% DO VALOR TOTAL DO PEDIDO. (A CHAVE PIX SERÁ ENVIADA NO WHATSAPP APÓS VOCÊ ENVIAR O RESUMO)</strong>
-  <div style="margin-top: 10px;">
-    <label>
-      <input type="checkbox" id="checkboxPagamento" style="margin-right: 6px;">
-      <span>👈🏾Marque esta caixinha se você leu e concorda</span>
-    </label>
-  </div>
+      <div id="confirmacaoPagamento" class="destacar-pagamento">
+  <p style="color: red; font-weight: bold;">
+    ⚠️ PARA CONFIRMAÇÃO DO PEDIDO É NECESSÁRIO O ADIANTAMENTO DE NO MÍNIMO 50% DO VALOR TOTAL.
+    <br>(A CHAVE PIX SERÁ ENVIADA NO WHATSAPP APÓS VOCÊ ENVIAR O RESUMO)
+  </p>
+  <label style="display: flex; align-items: center; gap: 10px; font-weight: bold;">
+    <input type="checkbox" id="checkboxPagamento">
+    Marque esta caixinha se você leu e concorda
+  </label>
+</div>
 </div>
   </section>
 

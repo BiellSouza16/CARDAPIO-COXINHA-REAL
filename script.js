@@ -590,6 +590,23 @@ document.addEventListener('input', e => {
 
     atualizar(); // Atualiza novamente com o valor corrigido
   }
+  document.addEventListener("DOMContentLoaded", () => {
+  const checkbox = document.getElementById("checkboxPagamento");
+  const blocoPagamento = document.getElementById("confirmacaoPagamento");
+
+  function atualizarEfeitoConfirmacao() {
+    if (checkbox.checked) {
+      blocoPagamento.classList.remove("destacar-pagamento");
+      blocoPagamento.classList.add("confirmado-pagamento");
+    } else {
+      blocoPagamento.classList.add("destacar-pagamento");
+      blocoPagamento.classList.remove("confirmado-pagamento");
+    }
+  }
+
+  checkbox.addEventListener("change", atualizarEfeitoConfirmacao);
+  atualizarEfeitoConfirmacao();
+});
 });
 // Marca visual da confirmação da checkbox
 const checkbox = document.getElementById('checkboxPagamento');
